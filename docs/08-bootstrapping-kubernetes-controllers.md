@@ -24,10 +24,10 @@ Download the official Kubernetes release binaries:
 
 ```
 wget -q --show-progress --https-only --timestamping \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kube-apiserver" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kube-controller-manager" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kube-scheduler" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kubectl"
+  "https://storage.googleapis.com/kubernetes-release/release/v1.18.0/bin/linux/amd64/kube-apiserver" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.18.0/bin/linux/amd64/kube-controller-manager" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.18.0/bin/linux/amd64/kube-scheduler" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.18.0/bin/linux/amd64/kubectl"
 ```
 
 Reference: https://kubernetes.io/docs/setup/release/#server-binaries
@@ -92,7 +92,7 @@ ExecStart=/usr/local/bin/kube-apiserver \\
   --etcd-cafile=/var/lib/kubernetes/ca.crt \\
   --etcd-certfile=/var/lib/kubernetes/etcd-server.crt \\
   --etcd-keyfile=/var/lib/kubernetes/etcd-server.key \\
-  --etcd-servers=https://192.168.5.11:2379,https://192.168.5.12:2379 \\
+  --etcd-servers=https://192.168.56.11:2379,https://192.168.56.12:2379 \\
   --event-ttl=1h \\
   --encryption-provider-config=/var/lib/kubernetes/encryption-config.yaml \\
   --kubelet-certificate-authority=/var/lib/kubernetes/ca.crt \\
@@ -133,7 +133,7 @@ Documentation=https://github.com/kubernetes/kubernetes
 [Service]
 ExecStart=/usr/local/bin/kube-controller-manager \\
   --address=0.0.0.0 \\
-  --cluster-cidr=192.168.5.0/24 \\
+  --cluster-cidr=192.168.56.0/24 \\
   --cluster-name=kubernetes \\
   --cluster-signing-cert-file=/var/lib/kubernetes/ca.crt \\
   --cluster-signing-key-file=/var/lib/kubernetes/ca.key \\
@@ -229,7 +229,7 @@ loadbalancer# sudo apt-get update && sudo apt-get install -y haproxy
 ```
 loadbalancer# cat <<EOF | sudo tee /etc/haproxy/haproxy.cfg 
 frontend kubernetes
-    bind 192.168.5.30:6443
+    bind 192.168.56.30:6443
     option tcplog
     mode tcp
     default_backend kubernetes-master-nodes
@@ -238,8 +238,8 @@ backend kubernetes-master-nodes
     mode tcp
     balance roundrobin
     option tcp-check
-    server master-1 192.168.5.11:6443 check fall 3 rise 2
-    server master-2 192.168.5.12:6443 check fall 3 rise 2
+    server master-1 192.168.56.11:6443 check fall 3 rise 2
+    server master-2 192.168.56.12:6443 check fall 3 rise 2
 EOF
 ```
 
@@ -252,7 +252,7 @@ loadbalancer# sudo service haproxy restart
 Make a HTTP request for the Kubernetes version info:
 
 ```
-curl  https://192.168.5.30:6443/version -k
+curl  https://192.168.56.30:6443/version -k
 ```
 
 > output
